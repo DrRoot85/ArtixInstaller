@@ -27,7 +27,7 @@ echo "Set root password:"
 passwd
 
 echo "Creating user DrRoot..."
-useradd -m -G wheel -s /bin/bash DrRoot
+useradd -m -G wheel,video,audio,input,power,storage,optical,lp,scanner,dbus,uucp -s /bin/bash DrRoot
 echo "Set password for DrRoot:"
 passwd DrRoot
 
