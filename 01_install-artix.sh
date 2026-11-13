@@ -122,9 +122,13 @@ basestrap /mnt \
     base base-devel openrc elogind-openrc \
     linux linux-headers linux-firmware linux-firmware-nvidia \
     dkms btrfs-progs dosfstools util-linux cryptsetup cryptsetup-openrc \
-    sudo vim intel-ucode
+    sudo vim intel-ucode \
+    nvidia-580xx-dkms  nvidia-580xx-utils \
+    nvidia-utils-openrc nvidia-580xx-settings \
+    libxnvctrl-580xx lib32-nvidia-580xx-utils 
+ 
 
-# --- 12. crypttab for OpenRC? No — OpenRC uses /etc/conf.d/dmcrypt.
+ # --- 12. crypttab for OpenRC? No — OpenRC uses /etc/conf.d/dmcrypt.
 #         We write the dmcrypt config here so Stage 2 only enables the service.
 cat > /mnt/etc/conf.d/dmcrypt <<EOF
 # Ephemeral encrypted swap — random key each boot
