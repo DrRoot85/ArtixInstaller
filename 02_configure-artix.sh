@@ -58,7 +58,8 @@ pacman -S --noconfirm \
   wireplumber wireplumber-openrc alsa-utils sof-firmware bluez bluez-utils bluez-openrc \
   xorg-apps xorg-drivers xorg xclip brightnessctl udisks2 udiskie udisks2-lvm2 udisks2-btrfs pavucontrol \
   man-db man-pages texinfo nerd-fonts kitty go rustup \
-  7zip unrar zip unzip p7zip tar gzip bzip2 xz zstd lz4 lzop cpio pigz pbzip2 pixz unar atool file
+  7zip unrar zip unzip p7zip tar gzip bzip2 xz zstd lz4 lzop cpio pigz pbzip2 pixz unar atool file \
+  opencl-nvidia-580xx lib32-opencl-nvidia-580xx 
 
 # 6. Detect RAM for Information & Adjustments
 TOTAL_RAM_KB=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
