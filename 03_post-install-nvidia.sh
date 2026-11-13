@@ -4,17 +4,31 @@ set -Eeuo pipefail
 # NVIDIA Quadro M1000M (Pascal) — 580xx legacy DKMS branch.
 # AUR-only on Artix stable. Build as DrRoot, install as root.
 
+
 sudo pacman -S --needed --noconfirm base-devel dkms linux-headers git
 
 WORKDIR="$HOME/nvidia-build"
 mkdir -p "$WORKDIR" && cd "$WORKDIR"
 
-for pkg in nvidia-580xx-utils nvidia-580xx-dkms; do
-    if [[ ! -d "$pkg" ]]; then
-        git clone "https://aur.archlinux.org/${pkg}.git"
+# --- NVIDIA 580xx: prefer Artix world repo, fall back to AUR ---
+install_nvidia_pkg() {
+    local pkg="$1"
+    if pacman -Si "$pkg" &>/dev/null; then
+        echo "Installing $pkg from Artix repos..."
+        sudo pacman -S --needed --noconfirm "$pkg"
+    else
+        echo "$pkg not in repos — building from AUR..."
+        [[ -d "$pkg" ]] || git clone "https://aur.archlinux.org/${pkg}.git"
+        ( cd "$pkg" && makepkg -si --noconfirm )
     fi
-    ( cd "$pkg" && makepkg -si --noconfirm )
+}
+
+sudo pacman -S --needed --noconfirm base-devel dkms linux-headers git
+
+for pkg in nvidia-580xx-dkms nvidia-580xx-utils nvidia-580xx-settings; do
+    install_nvidia_pkg "$pkg"
 done
+
 
 # Blacklist nouveau
 echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
