@@ -65,7 +65,21 @@ TOTAL_RAM_KB=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 TOTAL_RAM_GB=$((TOTAL_RAM_KB / 1024 / 1024))
 echo "Detected system RAM: ~${TOTAL_RAM_GB} GB"
 
-# 7. Configure OpenRC Services
+# --- INSERT HERE (Before mkinitcpio / GRUB configuration) ---
+
+# Configure encrypted ephemeral swap via crypttab
+SWAP_UUID=$(blkid -s UUID -o value /dev/nvme0n1p2)
+echo "swap UUID=${SWAP_UUID} /dev/urandom swap=yes,cipher=aes-xts-plain64,size=256" >> /etc/crypttab
+
+# Update fstab to use the mapped swap device instead of raw partition
+sed -i 's|/dev/nvme0n1p2|/dev/mapper/swap|g' /etc/fstab
+
+# Enable dmcrypt service for OpenRC
+
+# --- END OF INSERTION ---
+
+
+# 8. Configure OpenRC Services
 rc-update add NetworkManager default
 rc-update add bluetoothd default
 rc-update add openssh default
@@ -75,6 +89,7 @@ rc-update add cronie default
 rc-update add dbus default
 rc-update add pipewire default
 rc-update add wireplumber default
+rc-update add dmcrypt default
 
 # Firewall setup
 firewall-cmd --permanent --add-service=ssh
@@ -84,13 +99,14 @@ firewall-cmd --reload
 echo "@weekly root fstrim -av" > /etc/cron.d/fstrim
 chmod 644 /etc/cron.d/fstrim
 
-# 8. Configure mkinitcpio (Btrfs, Encryption, USB, NVIDIA)
+
+# 9. Configure mkinitcpio (Btrfs, Encryption, USB, NVIDIA)
 sed -i 's/^MODULES=(.*)/MODULES=(btrfs usbhid atkbd nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
 sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect modconf kms keyboard keymap block encrypt filesystems)/' /etc/mkinitcpio.conf
 
 mkinitcpio -P
 
-# 9. Configure GRUB Bootloader with LUKS UUID
+# 10. Configure GRUB Bootloader with LUKS UUID
 ROOT_PART_UUID=$(blkid -s UUID -o value /dev/nvme0n1p3)
 
 cat <<EOF>> /etc/default/grub
