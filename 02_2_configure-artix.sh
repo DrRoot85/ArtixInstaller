@@ -96,7 +96,7 @@ ROOT_PART_UUID=$(blkid -s UUID -o value /dev/nvme0n1p3)
 
 cat <<EOF>> /etc/default/grub
 GRUB_ENABLE_CRYPTODISK=y
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet zswap.enabled=1 cryptdevice=UUID=${ROOT_PART_UUID}:main root=/dev/mapper/main"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet zswap.enabled=1 cryptdevice=UUID=${ROOT_PART_UUID}:main root=/dev/mapper/main nvidia-drm.modeset=1"
 EOF
 
 grub-install --recheck /dev/nvme0n1
