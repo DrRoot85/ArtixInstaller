@@ -8,6 +8,8 @@ echo "=================================================="
 echo " Artix Linux Installation — Stage 1 (live ISO)"
 echo "=================================================="
 
+pacman -S parted gptfdisk
+
 # --- Cleanup trap: never leave mounts or LUKS open on failure ---
 cleanup() {
     local rc=$?
