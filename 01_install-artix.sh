@@ -67,8 +67,9 @@ fatlabel "${EFI_PART}" ESP
 
 # 8. Set up LUKS2 Encryption
 echo "Configuring LUKS2 encryption on ${ROOT_PART}..."
-cryptsetup luksFormat --type luks2 "${ROOT_PART}"
+cryptsetup luksFormat --type luks2 --pbkdf pbkdf2 "${ROOT_PART}"
 cryptsetup luksOpen "${ROOT_PART}" main
+
 
 # 9. Format Btrfs inside LUKS container
 echo "Formatting Btrfs filesystem..."
